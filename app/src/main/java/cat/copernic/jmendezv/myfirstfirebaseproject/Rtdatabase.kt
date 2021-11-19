@@ -1,11 +1,13 @@
 package cat.copernic.jmendezv.myfirstfirebaseproject
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.edit
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -13,6 +15,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import kotlin.math.log
 
 // https://firebase.google.com/docs/database/android/read-and-write?hl=es#kotlin+ktx
 
@@ -50,6 +53,7 @@ class Rtdatabase : AppCompatActivity() {
             myRef.setValue(Record(data = value).toString())
             Log.d(TAG, "value modified $value ")
 //            btModifica.isEnabled = false
+
         }
 
         // Read from the database
@@ -71,6 +75,18 @@ class Rtdatabase : AppCompatActivity() {
             }
         })
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        logOut()
+    }
+
+    private fun logOut() {
+        val pref = getSharedPreferences(getString(R.string.prefs_filename), Context.MODE_PRIVATE).edit {
+            clear()
+            apply()
+        }
     }
 }
 
