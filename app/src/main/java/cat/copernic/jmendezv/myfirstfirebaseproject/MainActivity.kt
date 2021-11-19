@@ -3,10 +3,8 @@ package cat.copernic.jmendezv.myfirstfirebaseproject
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -14,12 +12,10 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
-import cat.copernic.jmendezv.myfirstfirebaseproject.R
-import cat.copernic.jmendezv.myfirstfirebaseproject.Rtdatabase
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
@@ -47,10 +43,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btRtDatabase: Button
     private lateinit var btGoogleLogin: Button
 
-    val launcher =         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        onActivityResult(GOOGLE_SIGN_IN, result)
-    }//.launch(googleClient.signInIntent)
-
+    val launcher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            onActivityResult(GOOGLE_SIGN_IN, result)
+        }//.launch(googleClient.signInIntent)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,20 +68,20 @@ class MainActivity : AppCompatActivity() {
         auth = Firebase.auth
 
 
-        btAutentifica.setOnClickListener{
+        btAutentifica.setOnClickListener {
             btAutentifica.isEnabled = false
             var password = etPassword.text.toString()
             var email = etEmail.text.toString()
-            signIn( email.trim(), password.trim())
+            signIn(email.trim(), password.trim())
             //signIn( "pep.mendez@copernic.cat", "copernic")
         }
 
-        btAlta.setOnClickListener{
+        btAlta.setOnClickListener {
             btAlta.isEnabled = false
             var password = etPassword.text.toString()
             var email = etEmail.text.toString()
-            Log.d( TAG, "email: $email Pass: $password")
-            createAccount( email.trim(), password.trim())
+            Log.d(TAG, "email: $email Pass: $password")
+            createAccount(email.trim(), password.trim())
             //signIn( "ivan.canton@copernic.cat", "1234321")
         }
 
@@ -100,7 +96,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun googleLogin() {
         val googleConf = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_cliend_id))
+            .requestIdToken(getString(R.string.my_default_web_client_id))
             .requestEmail()
             .build()
         val googleClient = GoogleSignIn.getClient(this, googleConf)
@@ -109,7 +105,7 @@ class MainActivity : AppCompatActivity() {
         googleClient.signOut()
         // deprecated
         //startActivityForResult(googleClient.signInIntent, GOOGLE_SIGN_IN)
-    launcher.launch(googleClient.signInIntent)
+        launcher.launch(googleClient.signInIntent)
 
     }
 
@@ -127,13 +123,13 @@ class MainActivity : AppCompatActivity() {
                         FirebaseAuth.getInstance().signInWithCredential(credential)
                             .addOnCompleteListener {
                                 if (it.isSuccessful) {
+                                    showAlert("Google Auth", "Authenticated")
                                     navigateToLogged()
                                 } else {
                                     showAlert("Google Auth", "Authentication produjo errores")
                                 }
                             }
-                    }
-                    catch (error: ApiException) {
+                    } catch (error: ApiException) {
                         showAlert("Google Auth", error.message!!)
                     }
                 }
@@ -143,7 +139,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun navigateToLogged() {
-        val intent = Intent( this, Rtdatabase::class.java)
+        val intent = Intent(this, Rtdatabase::class.java)
         startActivity(intent)
     }
 
@@ -152,13 +148,13 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser = auth.currentUser
-        if(currentUser != null){
+        if (currentUser != null) {
             reload()
         }
     }
     // [END on_start_check_user]
 
-    private fun signOut(){
+    private fun signOut() {
         Firebase.auth.signOut()
     }
 
@@ -175,8 +171,10 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                    Toast.makeText(baseContext, "Authentication failed.",
-                        Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        baseContext, "Authentication failed.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     updateUI(null)
                 }
             }
@@ -201,7 +199,10 @@ class MainActivity : AppCompatActivity() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithEmail:success")
                     val user = auth.currentUser
-                    val pref = getSharedPreferences(getString(R.string.prefs_filename), Context.MODE_PRIVATE).edit {
+                    val pref = getSharedPreferences(
+                        getString(R.string.prefs_filename),
+                        Context.MODE_PRIVATE
+                    ).edit {
                         putString("email", email)
                         putString("password", password)
                         apply()
@@ -210,8 +211,10 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithEmail:failure", task.exception)
-                    Toast.makeText(baseContext, "Authentication failed.",
-                        Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        baseContext, "Authentication failed.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     updateUI(null)
                 }
             }
@@ -227,7 +230,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateUI(user: FirebaseUser?) {
-        if( user != null ) tvTexto.text = user.email
+        if (user != null) tvTexto.text = user.email
         else tvTexto.text = "sense registrar"
     }
 
