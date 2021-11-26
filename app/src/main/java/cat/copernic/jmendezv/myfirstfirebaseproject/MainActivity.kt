@@ -23,15 +23,16 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.iid.FirebaseInstanceId
-import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 
@@ -40,6 +41,18 @@ import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 // keytool -exportcert -alias androiddebugkey -keystore ~/.android/debug.keystore | openssl sha1 -binary | openssl base64
 
 /*
+
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+*
+* Is Firebase good for Android studio?
+* Firebase is an effective Backend as a Service (BaaS) platform.
+* It offers developers a plethora of services and tools to develop high-quality and scalable
+* applications to grow their consumer base in the best possible way.
 *
 * Cloud Firestore is Firebase's newest database for mobile app development.
 * It builds on the successes of the Realtime Database with a new, more intuitive data model.
@@ -48,6 +61,40 @@ import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 *
 * Realtime Database is Firebase's original database. It's an efficient, low-latency solution
 * for mobile apps that require synced states across clients in realtime.
+*
+* How to install firebase cli (command line interface)
+*
+* curl -sL https://firebase.tools | bash
+*
+* How to upgrade firebase cli
+*
+* curl -sL https://firebase.tools | upgrade=true bash
+*
+* How to log in
+*
+* firebase login
+*
+* How to list projects
+*
+* firebase projects:list
+*
+* How to get help
+*
+* firebase help <command>
+*
+* firebase projects:list
+*
+* firebase -P demofirebase1-49ea1 apps:list
+*
+* firebase -P demofirebase1-49ea1 apps:android:sha:list 1:376784055343:android:92f0088f11af9877416ada
+*
+* firebase -P demofirebase1-49ea1 database:instances:list
+*
+* firebase -P demofirebase1-49ea1 ext:list
+*
+* firebase -P demofirebase1-49ea1 functions:list
+*
+* firebase -P demofirebase1-49ea1 init database
 *
 * */
 
@@ -62,7 +109,9 @@ class MainActivity : AppCompatActivity() {
 
     private val GOOGLE_SIGN_IN = 100
 
-    private lateinit var auth: FirebaseAuth
+    private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
+    private lateinit var firebaseConfig: FirebaseRemoteConfig
 
     private lateinit var tvTexto: TextView
     private lateinit var btAutentifica: Button
@@ -99,14 +148,18 @@ class MainActivity : AppCompatActivity() {
         btRtDatabase = findViewById(R.id.btRtDatabase)
 
         // Initialize Firebase Auth
-        auth = Firebase.auth
+        firebaseAuth = Firebase.auth
+
+        val authenticatedUser = firebaseAuth.currentUser
+
+        firebaseAnalytics = Firebase.analytics
 
         // remote config
         val configSettings = remoteConfigSettings {
             minimumFetchIntervalInSeconds = 60
         }
 
-        val firebaseConfig = Firebase.remoteConfig
+        firebaseConfig = Firebase.remoteConfig
 
         firebaseConfig.setConfigSettingsAsync(configSettings)
         firebaseConfig.setDefaultsAsync(mapOf("show_error_button" to false, "error_button_text" to "Forzar exception"))
@@ -226,7 +279,7 @@ class MainActivity : AppCompatActivity() {
     private fun navigateToLogged(provider: Provider) {
         val intent = Intent(this, Rtdatabase::class.java).apply {
             putExtra("provider", provider.name)
-            putExtra("user", auth.currentUser.toString())
+            putExtra("user", firebaseAuth.currentUser.toString())
         }
         startActivity(intent)
     }
@@ -235,7 +288,7 @@ class MainActivity : AppCompatActivity() {
     public override fun onStart() {
         super.onStart()
         // Check if user is signed in (non-null) and update UI accordingly.
-        val currentUser = auth.currentUser
+        val currentUser = firebaseAuth.currentUser
         if (currentUser != null) {
             reload()
         }
@@ -248,13 +301,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun createAccount(email: String, password: String) {
         // [START create_user_with_email]
-        auth.createUserWithEmailAndPassword(email, password)
+        firebaseAuth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 btAlta.isEnabled = true
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "createUserWithEmail:success")
-                    val user: FirebaseUser? = auth.currentUser
+                    val user: FirebaseUser? = firebaseAuth.currentUser
                     updateUI(user)
                 } else {
                     // If sign in fails, display a message to the user.
@@ -280,13 +333,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun signIn(email: String, password: String) {
         // [START sign_in_with_email]
-        auth.signInWithEmailAndPassword(email, password)
+        firebaseAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 btAutentifica.isEnabled = true
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithEmail:success")
-                    val user = auth.currentUser
+                    val user = firebaseAuth.currentUser
                     val pref = getSharedPreferences(
                         getString(R.string.prefs_filename),
                         Context.MODE_PRIVATE
