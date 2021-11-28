@@ -14,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
+import androidx.core.os.bundleOf
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
@@ -96,6 +97,7 @@ import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 *
 * firebase -P demofirebase1-49ea1 init database
 *
+* ./adb shell setprop debug.firebase.analytics.app cat.copernic.jmendezv.myfirstfirebaseproject
 * */
 
 enum class Provider {
@@ -153,6 +155,9 @@ class MainActivity : AppCompatActivity() {
         val authenticatedUser = firebaseAuth.currentUser
 
         firebaseAnalytics = Firebase.analytics
+
+//        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundleOf("XXXX" to "YYYY"))
+
 
         // remote config
         val configSettings = remoteConfigSettings {

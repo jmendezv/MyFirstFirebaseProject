@@ -61,9 +61,10 @@
         android:layout_marginTop="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvMostra"
-        app:layout_constraintVertical_bias="0.51">
+        app:layout_constraintVertical_bias="0.0">
 
         <EditText
             android:id="@+id/addressEditText"
@@ -87,32 +88,67 @@
 
         <Button
             android:id="@+id/saveButton"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="24dp"
             android:text="Guardar"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/getButton"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/phoneEditText" />
 
         <Button
             android:id="@+id/getButton"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:text="Recuperar"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/saveButton" />
+            app:layout_constraintEnd_toStartOf="@+id/deleteButton"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/saveButton"
+            app:layout_constraintTop_toTopOf="@+id/saveButton" />
 
         <Button
             android:id="@+id/deleteButton"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:text="Eliminar"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/getButton"
+            app:layout_constraintTop_toTopOf="@+id/getButton" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:cropToPadding="true"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/getButton" />
+            app:layout_constraintTop_toBottomOf="@+id/deleteButton"
+            app:srcCompat="@drawable/ninel"
+            tools:srcCompat="@drawable/ninel" />
+
+        <Button
+            android:id="@+id/selectImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="Select image"
+            app:layout_constraintEnd_toStartOf="@+id/uploadImage"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+        <Button
+            android:id="@+id/uploadImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Upload image"
+            app:layout_constraintBottom_toBottomOf="@+id/selectImage"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/selectImage" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
