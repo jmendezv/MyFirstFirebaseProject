@@ -6,17 +6,21 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.net.Uri
 
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.widget.*
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
@@ -96,15 +100,18 @@ class Rtdatabase : AppCompatActivity() {
     private lateinit var getButton: Button
     private lateinit var deleteButton: Button
     private lateinit var selectImage: Button
+    private lateinit var makeImage: Button
     private lateinit var uploadImage: Button
     private lateinit var user: String
     private var imageUri: Uri? = null
-    private  val imageView by lazy { findViewById<ImageView>(R.id.imageView) }
+    private val imageView by lazy { findViewById<ImageView>(R.id.imageView) }
+    private val progressBar by lazy { findViewById<ProgressBar>(R.id.progressBar) }
     private lateinit var storageReference: StorageReference
 
     private val takeImageResult: ActivityResultLauncher<Uri> = registerForActivityResult(ActivityResultContracts.TakePicture()) { isSuccess ->
         if (isSuccess) {
             latestTmpUri?.let { uri ->
+                imageUri = uri
                 imageView.setImageURI(uri)
             }
         }
@@ -175,9 +182,10 @@ class Rtdatabase : AppCompatActivity() {
         deleteButton = findViewById(R.id.deleteButton)
         user = intent.getStringExtra("user") ?: "unknown user"
         selectImage = findViewById(R.id.selectImage)
+        makeImage = findViewById(R.id.makeImage)
         uploadImage = findViewById(R.id.uploadImage)
         //imageView = findViewById(R.id.imageView)
-
+        progressBar.setProgressTintList(ColorStateList.valueOf(Color.RED))
 
         setup(myRef)
 
@@ -277,6 +285,11 @@ class Rtdatabase : AppCompatActivity() {
             //selectImg()
             //selectImageFromGallery()
             observer.selectImage()
+
+        }
+
+        makeImage.setOnClickListener {
+            takeImage()
         }
 
         uploadImage.setOnClickListener {
@@ -309,19 +322,27 @@ class Rtdatabase : AppCompatActivity() {
             return
         }
         // User progress bar instead
-        val progressDialog = ProgressDialog(this).apply {
-            setTitle("Uploading file ...")
-        }
+//        val progressDialog = ProgressDialog(this).apply {
+//            setTitle("Uploading file ...")
+//        }
 
-        progressDialog.show()
+//        progressDialog.show()
+        progressBar.setVisibility(View.VISIBLE)
+//        getWindow().setFlags(
+//            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+//            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
         val formatter = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss")
         val fileName = formatter.format(Date())
         storageReference = FirebaseStorage.getInstance().getReference("images/$fileName")
         storageReference.putFile(imageUri!!).addOnSuccessListener {
             Toast.makeText(this, "Image uploaded", Toast.LENGTH_SHORT).show()
-            if (progressDialog.isShowing) progressDialog.dismiss()
+//            if (progressDialog.isShowing) progressDialog.dismiss()
+            progressBar.setVisibility(View.INVISIBLE)
+//            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
         }.addOnFailureListener {
-            if (progressDialog.isShowing) progressDialog.dismiss()
+//            if (progressDialog.isShowing) progressDialog.dismiss()
+            progressBar.setVisibility(View.INVISIBLE);
+//            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
             Toast.makeText(this, "Image error", Toast.LENGTH_SHORT).show()
         }
     }
