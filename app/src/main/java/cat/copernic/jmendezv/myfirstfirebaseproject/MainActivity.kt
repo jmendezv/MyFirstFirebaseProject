@@ -98,6 +98,37 @@ import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 * firebase -P demofirebase1-49ea1 init database
 *
 * ./adb shell setprop debug.firebase.analytics.app cat.copernic.jmendezv.myfirstfirebaseproject
+
+{
+    "rules": {
+        "users": {
+            "$uid": {
+                ".write":  "$uid === auth.uid"
+            }
+        }
+    }
+}
+
+// The .validate rule applies the same validation logic to both .read & .write rules
+// This rule enforce that data to /foo/ must be a string less than 100 chars
+// .validate rules are only evaluated for non-null values and do not cascade
+
+{
+    "rules": {
+        "foo": {
+            ".validate": "newData.isString() && newData.val().length < 100"
+        }
+    }
+}
+
+{
+    "rules": {
+        "students": {
+            ".indexOn": ["name", "age"]
+        }
+    }
+}
+
 * */
 
 enum class Provider {
